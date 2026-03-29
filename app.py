@@ -49,9 +49,15 @@ with st.sidebar:
                 st.success("Document Embedded & Indexed!")
                 st.session_state.api_calls += 1 # 1 batch embedding call
     
-
     st.divider()
     
+    st.subheader("🔑 Demo Settings")
+    override_key = st.text_input("Oxlo API Key (Optional)", type="password", help="If the public hackathon API limit is reached, Judges can securely enter their own key here to continue testing.")
+    if override_key:
+        os.environ["OXLO_API_KEY"] = override_key
+        st.success("API Key injected for this session!")
+
+    st.divider()
     st.subheader("🧠 System Memory (Cache)")
     with st.expander("View Stored Queries"):
         if "semantic_cache_metadata" in st.session_state and st.session_state.semantic_cache_metadata:
