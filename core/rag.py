@@ -4,7 +4,7 @@ import faiss
 import numpy as np
 import streamlit as st
 import os
-from .oxlo_client import generate_embeddings, client
+from .oxlo_client import generate_embeddings, get_oxlo_client
 
 def chunk_text(text, chunk_size=1000, overlap=200):
     chunks = []
@@ -35,6 +35,7 @@ class DocumentRAG:
         
         try:
            # Batch generate embeddings to save API calls / latency
+           client = get_oxlo_client()
            response = client.embeddings.create(input=chunks, model=model)
            embeddings = [d.embedding for d in response.data]
         except Exception as e:
