@@ -1,0 +1,25 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*~
+*.so
+
+# Environment Variables (Keep API keys out of the image layer!)
+.env
+
+# MacOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+
+# Application Specific Caches
+knowledge/
+*.faiss
+*.json
