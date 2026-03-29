@@ -6,14 +6,36 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_oxlo_client():
-    api_key = os.environ.get("OXLO_API_KEY", "dummy_key_for_testing")
+    # 1. Grab from local environments OR the Sidebar Override
+    api_key = os.environ.get("OXLO_API_KEY")
     base_url = os.environ.get("OXLO_BASE_URL", "https://api.oxlo.ai/v1")
+    
+    # 2. If it's empty, grab from Streamlit Cloud Native Secrets (TOML)
+    if not api_key:
+        try:
+            api_key = st.secrets.get("OXLO_API_KEY")
+            base_url = st.secrets.get("OXLO_BASE_URL", base_url)
+            # Rehydrate the OS environment so other components work
+            if api_key: os.environ["OXLO_API_KEY"] = api_key
+            if base_url: os.environ["OXLO_BASE_URL"] = base_url
+        except Exception:
+            pass
+            
+    if not api_key:
+        api_key = "dummy_key_for_missing_env_vars"
+
     return OpenAI(api_key=api_key, base_url=base_url)
 
-client = get_oxlo_client()
-
 def generate_text(prompt, model=None, system_prompt=None, history=None):
-    model = model or os.environ.get("OXLO_TEXT_MODEL", "llama-3.2-3b")
+    client = get_oxlo_client() # Dynamically initialize to capture latest Override key
+    
+    # Same logic to fallback to Streamlit secrets for model name
+    if not model:
+        model = os.environ.get("OXLO_TEXT_MODEL")
+        if not model:
+            try: model = st.secrets.get("OXLO_TEXT_MODEL", "llama-3.2-3b")
+            except: model = "llama-3.2-3b"
+
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
@@ -32,7 +54,14 @@ def generate_text(prompt, model=None, system_prompt=None, history=None):
         return f"API Error: {e}"
 
 def generate_embeddings(text, model=None):
-    model = model or os.environ.get("OXLO_EMBEDDING_MODEL", "text-embedding-v2")
+    client = get_oxlo_client()
+    
+    if not model:
+        model = os.environ.get("OXLO_EMBEDDING_MODEL")
+        if not model:
+            try: model = st.secrets.get("OXLO_EMBEDDING_MODEL", "bge-large")
+            except: model = "bge-large"
+            
     try:
         response = client.embeddings.create(
             input=[text],
