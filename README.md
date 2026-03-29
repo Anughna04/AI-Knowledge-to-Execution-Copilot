@@ -140,4 +140,10 @@ The application will be instantly live at `http://localhost:8501`!
 - **Vector DB / RAG:** FAISS + PyMuPDF
 - **External Web Indexing:** DuckDuckGo / Wikimedia Open API
 
+### 📧 For any queries, contact me at [anughnakandimalla11@gmail.com](anughnakandimalla11@gmail.com).
+
+## 👩‍💻Author
+
+Anughna
+
 *Note: LangChain/LangGraph were intentionally avoided to minimize overhead latency and maintain maximum architectural control.*
